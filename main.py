@@ -2,8 +2,7 @@ import streamlit as st
 from PIL import Image
 from streamlit_cropper import st_cropper
 from reportlab.pdfgen import canvas
-from reportlab.lib.colors import HexColor
-from reportlab.lib.colors import white
+from reportlab.lib.colors import HexColor, white
 from reportlab.graphics.barcode import qr
 from reportlab.graphics.shapes import Drawing
 import json
@@ -14,17 +13,30 @@ import zipfile
 from io import BytesIO
 import shutil
 
+
 # Constants
 DATA_FILE = "student_data.json"
 PHOTO_DIR = "photos"
 PDF_DIR = "pdfs"
 CARD_WIDTH, CARD_HEIGHT = 189, 321
 
-# Setup
-os.makedirs(PHOTO_DIR, exist_ok=True)
-os.makedirs(PDF_DIR, exist_ok=True)
 
-# Initialize session state
+# ------------------ CONFIG ------------------
+st.set_page_config(page_title="Student ID Card Manager", page_icon="🎓", layout="wide")
+
+# ------------------ USERS ------------------
+USERS = {
+    "aghs": "aghs@321",
+    # "admin": "admin123",
+    # "teacher": "teacher2024",
+    # "staff": "staff@123"
+}
+
+# ------------------ SESSION INIT ------------------
+if 'authenticated' not in st.session_state:
+    st.session_state.authenticated = False
+if 'username' not in st.session_state:
+    st.session_state.username = ""
 if 'current_page' not in st.session_state:
     st.session_state.current_page = "add_student"
 if 'selected_students' not in st.session_state:
@@ -34,10 +46,65 @@ if 'edit_mode' not in st.session_state:
 if 'edit_student_id' not in st.session_state:
     st.session_state.edit_student_id = None
 
-# Page Configuration
-st.set_page_config(page_title="Student ID Card Manager", page_icon="🎓", layout="wide")
+# ------------------ PERSIST LOGIN FROM URL ------------------
+params = st.query_params
+if params.get("logged_in", "false") == "true":
+    st.session_state.authenticated = True
 
-# Title and sidebar
+# ------------------ AUTH FUNCTIONS ------------------
+def authenticate_user(username, password):
+    return USERS.get(username) == password
+
+def logout():
+    st.session_state.authenticated = False
+    st.session_state.username = ""
+    st.query_params.clear()
+    st.rerun()
+
+def login_form():
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        st.markdown("""
+        <div style='text-align: center; padding: 2rem; background-color: #f0f2f6; border-radius: 10px; margin: 2rem 0;'>
+            <h2>🎓 AL GHAZALI HIGH SCHOOL</h2>
+            <p>Welcome to Student ID Manager</p>
+        </div>
+        """, unsafe_allow_html=True)
+
+        with st.form("login_form"):
+            st.subheader("Login")
+            username = st.text_input("Username", placeholder="Enter username")
+            password = st.text_input("Password", type="password", placeholder="Enter password")
+
+            colA, colB, colC = st.columns([1, 1, 1])
+            with colB:
+                login_button = st.form_submit_button("🚀 Login", use_container_width=True)
+
+            if login_button:
+                if authenticate_user(username, password):
+                    st.session_state.authenticated = True
+                    st.session_state.username = username
+                    st.query_params["logged_in"] = "true"
+                    st.success(f"Welcome, {username}! 🎉")
+                    st.rerun()
+                else:
+                    st.error("❌ Invalid username or password!")
+
+        with st.expander("🔍 Demo Credentials"):
+            st.markdown("""
+            **Example Login Credentials:**
+            - Username: `aghs` | Password: `aghs@321`
+            - Username: `admin` | Password: `admin123`
+            - Username: `teacher` | Password: `teacher2024`
+            """)
+
+# ------------------ AUTH CHECK ------------------
+if not st.session_state.authenticated:
+    login_form()
+    st.stop()
+
+
+# ------------------ LOGGED IN AREA ------------------
 st.title("🎓 Enhanced Student ID Card Manager")
 
 # Check if logo exists
@@ -54,6 +121,9 @@ page = st.sidebar.selectbox(
     ["Add Student", "Manage Students", "Bulk Operations", "Import/Export"],
     key="navigation"
 )
+
+if st.sidebar.button("🔒 Logout"):
+    logout()
 
 # Helper Functions
 def load_data():
