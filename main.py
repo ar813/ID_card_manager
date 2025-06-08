@@ -97,10 +97,13 @@ def login_form():
 
         with st.expander("⚠️ Warning"):
             st.markdown("""
-            - 🔒 **Never share your email or password with anyone.**
-            - 🛡️ Protect your credentials to keep your account secure.
-            - 🚫 Avoid entering your login details on untrusted sites.
-            """)
+            <div style="background-color:#fff3cd; padding:15px; border-left:5px solid #ffa500; border-radius:5px">
+                <strong>🔒 Never share your email or password with anyone.</strong><br>
+                🛡️ Protect your credentials to keep your account secure.<br>
+                🚫 Avoid entering your login details on untrusted sites.
+            </div>
+            """, unsafe_allow_html=True)
+
 
 
 # ------------------ AUTH CHECK ------------------
