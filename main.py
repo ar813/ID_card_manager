@@ -31,7 +31,7 @@ st.set_page_config(page_title="Student ID Card Manager", page_icon="🎓", layou
 
 # ------------------ USERS ------------------
 USERS = {
-    "aghs": "aghs@321",
+    "school": "school@321",
     # "admin": "admin123",
     # "teacher": "teacher2024",
     # "staff": "staff@123"
@@ -94,14 +94,6 @@ def login_form():
                     st.rerun()
                 else:
                     st.error("❌ Invalid username or password!")
-
-        with st.expander("🔍 Demo Credentials"):
-            st.markdown("""
-            **Example Login Credentials:**
-            - Username: `aghs` | Password: `aghs@321`
-            - Username: `admin` | Password: `admin123`
-            - Username: `teacher` | Password: `teacher2024`
-            """)
 
 # ------------------ AUTH CHECK ------------------
 if not st.session_state.authenticated:
