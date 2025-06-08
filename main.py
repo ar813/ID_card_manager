@@ -599,18 +599,36 @@ elif page == "Bulk Operations":
             progress_bar = st.progress(0)
             success_count = 0
             
-            for i, student in enumerate(data):
-                try:
-                    generate_pdf(student, student.get('photo_path'))
-                    success_count += 1
-                except Exception as e:
-                    st.error(f"Failed to generate PDF for {student['name']}: {str(e)}")
-                
-                progress_bar.progress((i + 1) / len(data))
-            
-            st.success(f"Generated {success_count} out of {len(data)} ID cards successfully!")
+            # Temporary in-memory ZIP file
+            zip_buffer = BytesIO()
+
+            with zipfile.ZipFile(zip_buffer, "w") as zipf:
+                for i, student in enumerate(data):
+                    try:
+                        # Generate PDF file path
+                        pdf_path = generate_pdf(student, student.get('photo_path'))
+
+                        # Add PDF to zip
+                        zipf.write(pdf_path, arcname=os.path.basename(pdf_path))
+                        success_count += 1
+                    except Exception as e:
+                        st.error(f"❌ Failed to generate PDF for {student['name']}: {str(e)}")
+                    
+                    progress_bar.progress((i + 1) / len(data))
+
+            st.success(f"✅ Generated {success_count} out of {len(data)} ID cards successfully!")
+
+            # Prepare ZIP file for download
+            zip_buffer.seek(0)
+            st.download_button(
+                label="⬇️ Download All PDFs as ZIP",
+                data=zip_buffer,
+                file_name="All_ID_Cards.zip",
+                mime="application/zip"
+            )
+
         else:
-            st.info("No students found to generate PDFs for.")
+            st.info("ℹ️ No students found to generate PDFs for.")
 
 # PAGE: Import/Export
 elif page == "Import/Export":
