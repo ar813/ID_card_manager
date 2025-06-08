@@ -12,6 +12,7 @@ from datetime import date, datetime
 import zipfile
 from io import BytesIO
 import shutil
+from pathlib import Path
 
 
 # Constants
@@ -331,6 +332,7 @@ if page == "Add Student":
                 if cropped_img:
                     img_filename = f"{roll_no.replace(' ', '_')}.png"
                     img_path = os.path.join(PHOTO_DIR, img_filename)
+                    Path(img_path).parent.mkdir(parents=True, exist_ok=True)
                     cropped_img.save(img_path)
 
                 student_info = {
