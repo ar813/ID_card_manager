@@ -21,6 +21,10 @@ PHOTO_DIR = "photos"
 PDF_DIR = "pdfs"
 CARD_WIDTH, CARD_HEIGHT = 189, 321
 
+# Ensure required folders exist
+Path(PHOTO_DIR).mkdir(parents=True, exist_ok=True)
+Path(PDF_DIR).mkdir(parents=True, exist_ok=True)
+Path("assets").mkdir(parents=True, exist_ok=True)  # if you write to assets folder at any point
 
 # ------------------ CONFIG ------------------
 st.set_page_config(page_title="Student ID Card Manager", page_icon="🎓", layout="wide")
