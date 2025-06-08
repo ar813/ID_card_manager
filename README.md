@@ -16,19 +16,6 @@
 
 ---
 
-## 📁 Folder Structure
-
-```
-├── app.py                  # Main Streamlit application
-├── data.json               # Student data storage
-├── photos/                 # Folder for student photos
-├── id_cards/               # Folder for generated PDF ID cards
-├── utils.py                # Utility functions (load/save, generate PDF, etc.)
-└── requirements.txt        # Python dependencies
-```
-
----
-
 ## 📦 Requirements
 
 * Python 3.8+
@@ -37,19 +24,7 @@
 * openpyxl
 * reportlab
 
-Install dependencies:
-
-```bash
-pip install -r requirements.txt
-```
-
 ---
-
-## 🚀 How to Run
-
-```bash
-streamlit run app.py
-```
 
 Upload student data via the **Import/Export** tab and generate ID cards instantly.
 
