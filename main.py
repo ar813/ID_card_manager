@@ -570,14 +570,42 @@ elif page == "Bulk Operations":
                 )
         
         with col2:
-            if st.button("🔄 Regenerate Selected PDFs"):
-                progress_bar = st.progress(0)
-                for i, student_id in enumerate(st.session_state.selected_students):
-                    student = next((s for s in data if s['id'] == student_id), None)
-                    if student:
-                        generate_pdf(student, student.get('photo_path'))
-                    progress_bar.progress((i + 1) / selected_count)
-                st.success(f"Regenerated {selected_count} PDF(s) successfully!")
+            if st.button("🎫 Generate All ID Cards"):
+                if data:
+                    progress_bar = st.progress(0)
+                    success_count = 0
+                    
+                    # Temporary in-memory ZIP file
+                    zip_buffer = BytesIO()
+
+                    with zipfile.ZipFile(zip_buffer, "w") as zipf:
+                        for i, student in enumerate(data):
+                            try:
+                                # Generate PDF file path
+                                pdf_path = generate_pdf(student, student.get('photo_path'))
+
+                                # Add PDF to zip
+                                zipf.write(pdf_path, arcname=os.path.basename(pdf_path))
+                                success_count += 1
+                            except Exception as e:
+                                st.error(f"❌ Failed to generate PDF for {student['name']}: {str(e)}")
+                            
+                            progress_bar.progress((i + 1) / len(data))
+
+                    st.success(f"✅ Generated {success_count} out of {len(data)} ID cards successfully!")
+
+                    # Prepare ZIP file for download
+                    zip_buffer.seek(0)
+                    st.download_button(
+                        label="⬇️ Download All PDFs as ZIP",
+                        data=zip_buffer,
+                        file_name="All_ID_Cards.zip",
+                        mime="application/zip"
+                    )
+
+                else:
+                    st.info("ℹ️ No students found to generate PDFs for.")
+                    
         
         with col3:
             if st.button("🗑️ Delete Selected", type="secondary"):
@@ -589,46 +617,7 @@ elif page == "Bulk Operations":
                 st.success(f"Deleted {deleted_count} student(s) successfully!")
                 st.rerun()
 
-    
-    # Bulk PDF Generation
-    st.markdown("---")
-    st.subheader("📄 Generate All PDFs")
-    
-    if st.button("🎫 Generate All ID Cards"):
-        if data:
-            progress_bar = st.progress(0)
-            success_count = 0
-            
-            # Temporary in-memory ZIP file
-            zip_buffer = BytesIO()
 
-            with zipfile.ZipFile(zip_buffer, "w") as zipf:
-                for i, student in enumerate(data):
-                    try:
-                        # Generate PDF file path
-                        pdf_path = generate_pdf(student, student.get('photo_path'))
-
-                        # Add PDF to zip
-                        zipf.write(pdf_path, arcname=os.path.basename(pdf_path))
-                        success_count += 1
-                    except Exception as e:
-                        st.error(f"❌ Failed to generate PDF for {student['name']}: {str(e)}")
-                    
-                    progress_bar.progress((i + 1) / len(data))
-
-            st.success(f"✅ Generated {success_count} out of {len(data)} ID cards successfully!")
-
-            # Prepare ZIP file for download
-            zip_buffer.seek(0)
-            st.download_button(
-                label="⬇️ Download All PDFs as ZIP",
-                data=zip_buffer,
-                file_name="All_ID_Cards.zip",
-                mime="application/zip"
-            )
-
-        else:
-            st.info("ℹ️ No students found to generate PDFs for.")
 
 # PAGE: Import/Export
 elif page == "Import/Export":
@@ -824,7 +813,7 @@ st.markdown("---")
 st.markdown(
     """
     <div style='text-align: center; color: #666;'>
-        <p>🎓 Enhanced Student ID Card Manager v2.0</p>
+        <p>🎓 Enhanced Student ID Card Manager v1.0</p>
         <p>Features: Multi-student management • Bulk operations • Excel import/export • Advanced filtering</p>
     </div>
     """, 
