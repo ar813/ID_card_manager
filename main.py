@@ -95,6 +95,14 @@ def login_form():
                 else:
                     st.error("❌ Invalid username or password!")
 
+        with st.expander("⚠️ Warning"):
+            st.markdown("""
+            - 🔒 **Never share your email or password with anyone.**
+            - 🛡️ Protect your credentials to keep your account secure.
+            - 🚫 Avoid entering your login details on untrusted sites.
+            """)
+
+
 # ------------------ AUTH CHECK ------------------
 if not st.session_state.authenticated:
     login_form()
