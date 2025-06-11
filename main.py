@@ -27,7 +27,7 @@ Path(PDF_DIR).mkdir(parents=True, exist_ok=True)
 Path("assets").mkdir(parents=True, exist_ok=True)  # if you write to assets folder at any point
 
 # ------------------ CONFIG ------------------
-st.set_page_config(page_title="Student ID Card Manager", page_icon="🎓", layout="wide")
+st.set_page_config(page_title="Al-Ghazali High School", page_icon="assets/logo.png", layout="wide")
 
 # ------------------ USERS ------------------
 USERS = {
