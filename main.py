@@ -233,7 +233,7 @@ Phone: {info['phone']}"""
 
     d = Drawing(qr_size, qr_size, transform=[scale_x, 0, 0, scale_y, 0, 0])
     d.add(qr_code)
-    d.drawOn(c, 50, 118)
+    d.drawOn(c, 50, 125)
 
     c.setFillColor(HexColor("#231f55"))
     c.setFont("Helvetica-Bold", 8)
